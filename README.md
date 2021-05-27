@@ -25,6 +25,14 @@ Cilium’s kube-proxy replacement depends on the Host-Reachable Services feature
 kubectl delete ds kube-proxy -n kube-system
 ```
 
+## Local Redirect Policy (beta)
+https://docs.cilium.io/en/v1.10/gettingstarted/local-redirect-policy/
+
+### Use Cases
+
+Local Redirect Policy allows Cilium to support the following use cases:
+### Node-local DNS cache
+DNS node-cache listens on a static IP to intercept traffic from application pods to the cluster’s DNS service VIP by default, which will be bypassed when Cilium is handling service resolution at or before the veth interface of the application pod. To enable the DNS node-cache in a Cilium cluster, the following example steers traffic to a local DNS node-cache which runs as a normal pod.
 ## values.yaml
 full: https://github.com/cilium/cilium/blob/v1.10.0/install/kubernetes/cilium/values.yaml
 
@@ -37,6 +45,7 @@ https://cilium.io/blog/2021/02/10/network-policy-editor
 http://editor.cilium.io/
 
 ## Cilium Network Policies
+
 ### Policy Enforcement Modes
 https://docs.cilium.io/en/v1.10/policy/intro/
 ## Cilium Star Wars Demo
@@ -52,6 +61,9 @@ kubectl exec -it cilium-pod -n kube-system -- bash
 cilium status --verbose
 cilium monitor --type policy-verdict
 cilium identity list
-cilium endpoints list
+cilium endpoint list
 hubble observe -f
+cilium-health status
 ```
+# Bugs
+https://github.com/cilium/cilium/pull/15148
