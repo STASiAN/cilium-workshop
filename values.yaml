@@ -1,0 +1,258 @@
+## ref: https://github.com/cilium/cilium/blob/v1.10.0/install/kubernetes/cilium/values.yaml
+
+debug:
+  # -- Enable debug logging
+  enabled: False
+  # verbose:
+
+# kubeConfigPath: ~/.kube/config
+k8sServiceHost: k8s.wsp.staging.domain.tld
+k8sServicePort: 443
+
+cluster:
+  # -- Name of the cluster. Only required for Cluster Mesh.
+  name: staging.k8s
+  # -- (int) Unique ID of the cluster. Must be unique across all connected
+  # clusters and in the range of 1 to 255. Only required for Cluster Mesh.
+  id: 1
+
+# -- Agent resource limits & requests
+# ref: https://kubernetes.io/docs/user-guide/compute-resources/
+resources: {}
+  # limits:
+  #   cpu: 4000m
+  #   memory: 4Gi
+  # requests:
+  #   cpu: 100m
+  #   memory: 512Mi
+
+# Configuration Values for cilium-agent
+
+# -- Optimize TCP and UDP workloads and enable rate-limiting traffic from
+# individual Pods with EDT (Earliest Departure Time)
+# through the "kubernetes.io/egress-bandwidth" Pod annotation.
+bandwidthManager: True
+
+bpf:
+  # -- Enable native IP masquerade support in eBPF
+  masquerade: true
+
+  # -- Configure whether direct routing mode should route traffic via
+  # host stack (true) or directly and more efficiently out of BPF (false) if
+  # the kernel supports it. The latter has the implication that it will also
+  # bypass netfilter in the host namespace.
+
+  # TODO: set to false after create policy for nodelocaldns: https://docs.cilium.io/en/v1.10/gettingstarted/local-redirect-policy/
+
+  hostRouting: true
+
+  # -- Configure the eBPF-based TPROXY to reduce reliance on iptables rules
+  # for implementing Layer 7 policy.
+  tproxy: true
+
+  # -- Configure the FIB lookup bypass optimization for nodeport reverse
+  # NAT handling.
+# lbBypassFIBLookup: true
+
+# -- Configure which datapath mode should be used for configuring container
+# connectivity. Valid options are "veth" or "ipvlan".
+datapathMode: veth
+
+# -- Enables the fallback compatibility solution for when the xt_socket kernel
+# module is missing and it is needed for the datapath L7 redirection to work
+# properly. See documentation for details on when this can be disabled:
+# http://docs.cilium.io/en/stable/install/system_requirements/#admin-kernel-version.
+enableXTSocketFallback: false
+
+encryption:
+  # -- Enable transparent network encryption.
+  enabled: false
+
+  # -- Enable encryption for pure node to node traffic.
+  nodeEncryption: false
+
+  # -- The interface to use for encrypted traffic.
+  # interface: eth0
+
+# -- Enables the enforcement of host policies in the eBPF datapath.
+hostFirewall: false
+
+hostPort:
+  # -- Enable hostPort service support.
+  enabled: true
+
+# -- Configure ClusterIP service handling in the host namespace (the node).
+hostServices:
+  # -- Enable host reachable services.
+  enabled: true
+
+  # -- Supported list of protocols to apply ClusterIP translation to.
+  protocols: tcp,udp
+
+hubble:
+  # -- Enable Hubble (true by default).
+  enabled: true
+
+  # -- Number of recent flows for Hubble to cache. Defaults to 4095.
+  # Possible values are:
+  #   1, 3, 7, 15, 31, 63, 127, 255, 511, 1023,
+  #   2047, 4095, 8191, 16383, 32767, 65535
+  flowBufferSize : 65535
+
+  # -- Hubble metrics configuration.
+  # See https://docs.cilium.io/en/stable/configuration/metrics/#hubble-metrics
+  # for more comprehensive documentation about Hubble metrics.
+  metrics:
+    enabled:
+      - dns:query;ignoreAAAA
+      - drop
+      - tcp
+      - flow
+      - port-distribution
+      - icmp
+      - http
+
+    serviceMonitor:
+      enabled: true
+
+  # -- An additional address for Hubble to listen to.
+  # Set this field ":4244" if you are enabling Hubble Relay, as it assumes that
+  # Hubble is listening on port 4244.
+  listenAddress: ":4244"
+
+  relay:
+    enabled: true
+
+  ui:
+    enabled: true
+    ingress:
+      enabled: true
+      annotations:
+        kubernetes.io/ingress.class: nginx
+        kubernetes.io/tls-acme: "true"
+        nginx.ingress.kubernetes.io/auth-signin: https://auth.wsp.staging.domain.tld/oauth2/start?rd=$scheme://$host$escaped_request_uri
+        nginx.ingress.kubernetes.io/auth-url: http://oauth2-proxy.auth.svc.staging.k8s/oauth2/auth
+        nginx.ingress.kubernetes.io/whitelist-source-range: 10.14.88.0/24
+      hosts:
+        - hubble.wsp.staging.domain.tld
+      tls:
+        - secretName: hubble-tls
+          hosts:
+            - hubble.wsp.staging.domain.tld
+
+# -- Configure whether to install iptables rules to allow for TPROXY
+# (L7 proxy injection), iptables-based masquerading and compatibility
+# with kube-proxy.
+installIptablesRules: false
+
+ipam:
+  # -- Configure IP Address Management mode.
+  # ref: https://docs.cilium.io/en/stable/concepts/networking/ipam/
+  mode: "cluster-pool"
+  operator:
+    # -- IPv4 CIDR range to delegate to individual nodes for IPAM.
+    clusterPoolIPv4PodCIDR: "10.232.64.0/18"
+    # -- IPv4 CIDR mask size to delegate to individual nodes for IPAM.
+    clusterPoolIPv4MaskSize: 24
+
+# -- Configure the eBPF-based ip-masq-agent
+ipMasqAgent:
+  enabled: false
+
+ipvlan:
+  # -- Enable the IPVLAN datapath
+  enabled: false
+
+  # -- masterDevice is the name of the device to use to attach secondary IPVLAN
+  # devices
+  # masterDevice: eth0
+
+# -- Configure Kubernetes specific configuration
+k8s: {}
+  # -- requireIPv4PodCIDR enables waiting for Kubernetes to provide the PodCIDR
+  # range via the Kubernetes node resource
+  # requireIPv4PodCIDR: false
+
+  # -- requireIPv6PodCIDR enables waiting for Kubernetes to provide the PodCIDR
+  # range via the Kubernetes node resource
+  # requireIPv46PodCIDR: false
+
+# -- Configure the kube-proxy replacement in Cilium BPF datapath
+# Valid options are "disabled", "probe", "partial", "strict".
+# ref: https://docs.cilium.io/en/stable/gettingstarted/kubeproxy-free/
+
+kubeProxyReplacement: "strict"
+# -- Enable Layer 7 network policy.
+l7Proxy: false
+
+localRedirectPolicy: false
+
+# -- Configure maglev consistent hashing
+maglev: {}
+  # -- tableSize is the size (parameter M) for the backend table of one
+  # service entry
+  # tableSize:
+
+  # -- hashSeed is the cluster-wide base64 encoded seed for the hashing
+  # hashSeed:
+
+# -- Specify the CIDR for native routing (ie to avoid IP masquerade for).
+# This value corresponds to the configured cluster-cidr.
+# nativeRoutingCIDR:
+
+# -- Configure cilium-monitor sidecar
+monitor:
+  enabled: false
+
+# -- Configure service load balancing
+loadBalancer:
+  # algorithm is the name of the load balancing algorithm for backend
+  # selection e.g. random or maglev
+  algorithm: maglev
+
+  # mode is the operation mode of load balancing for remote backends
+  # e.g. snat, dsr, hybrid
+  # mode: snat
+
+  # acceleration is the option to accelerate service handling via XDP
+  # e.g. native, disabled
+  # acceleration: disabled
+
+nodePort:
+  # -- Enable the Cilium NodePort service implementation.
+  enabled: true
+
+policyAuditMode: False
+
+# -- The agent can be put into one of the three policy enforcement modes:
+# default, always and never.
+# ref: https://docs.cilium.io/en/stable/policy/intro/#policy-enforcement-modes
+policyEnforcementMode: always
+
+# -- Configure prometheus metrics on the configured port at /metrics
+prometheus:
+  enabled: true
+  serviceMonitor:
+    enabled: true
+
+# -- Configure BPF socket operations configuration
+sockops:
+  # enabled enables installation of socket options acceleration.
+  enabled: false
+
+# -- Configure the encapsulation configuration for communication between nodes.
+# Possible values:
+#   - disabled
+#   - vxlan (default)
+#   - geneve
+tunnel: "vxlan"
+
+operator:
+  prometheus:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+
+preflight:
+  # -- Enable Cilium pre-flight resources (required for upgrade)
+  enabled: false

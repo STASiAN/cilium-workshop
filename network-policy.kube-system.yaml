@@ -1,0 +1,70 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: kube-ststem
+  namespace: kube-system
+spec:
+  endpointSelector: {}
+  ingress:
+# aws-ebs-csi health
+# cilium health
+# cluster-autoscaler health
+# coredns health
+# dns-autoscaler health
+# hubble-relay health
+# metrics-server health
+    - fromEntities:
+        - host
+        - world
+        # TODO:
+        # remove world entity after v1.10.0 release
+        # see https://github.com/cilium/cilium/pull/15148
+      toPorts:
+        - ports:
+            - port: "53"
+        - ports:
+            - port: "4244"
+        - ports:
+            - port: "4245"
+        - ports:
+            - port: "8080"
+        - ports:
+            - port: "8085"
+        - ports:
+            - port: "8181"
+        - ports:
+            - port: "8443"
+        - ports:
+            - port: "9808"
+# hubble-relay
+    - fromEntities:
+        - remote-node
+      toPorts:
+        - ports:
+            - port: "4244"
+# coredns
+# etcd
+# hubble-relay
+# kube-apiserver
+  egress:
+    - toEntities:
+        - world
+      toPorts:
+        - ports:
+            - port: "53"
+    - toEntities:
+        - host
+        - remote-node
+        - world
+        # TODO:
+        # remove world entity after v1.10.0 release
+        # see https://github.com/cilium/cilium/pull/15148
+      toPorts:
+        - ports:
+            - port: "2379"
+        - ports:
+            - port: "4244"
+        - ports:
+            - port: "6443"
+        - ports:
+            - port: "10250"

@@ -1,0 +1,43 @@
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: cilium
+spec:
+  endpointSelector: {}
+  ingress:
+# to every pod in namespace
+    - fromEndpoints:
+        - {}
+    - fromEndpoints:
+        - matchLabels:
+            app: prometheus
+            io.kubernetes.pod.namespace: monitoring
+  egress:
+# to every pod in namespace
+    - toEndpoints:
+        - {}
+    - toEntities:
+        - world
+      toPorts:
+        - ports:
+            - port: "443"
+        - ports:
+            - port: "80"
+# nodelocaldns
+    - toCIDR:
+        - 169.254.25.10/32
+    - toFQDNs:
+        - matchPattern: bitbucket.org
+      toPorts:
+        - ports:
+            - port: "22"
+    - toFQDNs:
+        - matchPattern: github.com
+      toPorts:
+        - ports:
+            - port: "22"
+    - toFQDNs:
+        - matchName: gitlab.com
+      toPorts:
+        - ports:
+            - port: "22"
