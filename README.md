@@ -30,8 +30,28 @@ full: https://github.com/cilium/cilium/blob/v1.10.0/install/kubernetes/cilium/va
 
 minimal: https://github.com/stasian/cilium-workshop/values.yml
 
+
 ## NetworkPolicy Editor: Create, Visualize, and Share Kubernetes NetworkPolicies
 https://cilium.io/blog/2021/02/10/network-policy-editor
+
 http://editor.cilium.io/
+
+## Cilium Network Policies
+### Policy Enforcement Modes
+https://docs.cilium.io/en/v1.10/policy/intro/
 ## Cilium Star Wars Demo
 https://github.com/cilium/star-wars-demo
+
+## Useful CLI commands
+
+```bash
+kubectl exec -it cilium-pod -n kube-system -- bash
+```
+
+```bash
+cilium status --verbose
+cilium monitor --type policy-verdict
+cilium identity list
+cilium endpoints list
+hubble observe -f
+```
