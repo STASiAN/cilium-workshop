@@ -34,7 +34,8 @@ Cilium’s kube-proxy replacement depends on the Host-Reachable Services feature
 kubectl delete ds kube-proxy -n kube-system
 ```
 ## Maglev
-
+![maglev](https://cilium.io/static/951298a427839338bbed1eb8c7fe2c9a/b8256/intro.png)
+https://cilium.io/blog/2020/11/10/cilium-19
 ## Local Redirect Policy (beta)
 https://docs.cilium.io/en/v1.10/gettingstarted/local-redirect-policy/
 
