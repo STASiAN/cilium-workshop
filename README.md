@@ -7,16 +7,25 @@ https://cilium.io/blog/2020/11/10/ebpf-future-of-networking/
 ### Cilium - eBPF-based Networking, Observability, and Security
 
 ![arch](https://cilium.io/static/6c69375bdc369895441cdc52ae9801dc/8b936/cilium_arch.png)
-
+https://ebpf.io
 ## Cilium 1.8: XDP Load Balancing, Cluster-wide Flow Visibility, Host Network Policy, Native GKE & Azure modes, Session Affinity, CRD-mode Scalability, Policy Audit mode, ...
+![xdp](https://cilium.io/static/ceb5512de15120b9c2043f87a1e468ff/742d3/intro.png)
 https://cilium.io/blog/2020/06/22/cilium-18
 
-![xdp](https://cilium.io/static/ceb5512de15120b9c2043f87a1e468ff/742d3/intro.png)
+## Why we swithced to Cilium (c)
 
+![latency](https://mk0mblbrnnl9kxrc0o.kinstacdn.com/wp-content/uploads/2019/01/iptables-service-1.jpg)
+https://mobilabsolutions.com/2019/01/why-we-switched-to-cilium/
 ## Hubble Network, Service & Security Observability for Kubernetes
 ![hubble](https://github.com/cilium/hubble/raw/master/Documentation/images/hubble_arch.png)
 
+## Cilium ClusterMesh
+![clustermesh](https://cilium.io/static/8eb8d013689a80b51d9a73d61c6e70f8/f941f/intro_layers.png)
+https://cilium.io/blog/2019/03/12/clustermesh
 
+## Required Kernel Versions for Advanced Features
+![kernels](https://i.ibb.co/9nZnsV9/Screenshot-2021-05-31-at-12-16-12.png)
+https://docs.cilium.io/en/v1.9/operations/system_requirements/#required-kernel-versions-for-advanced-features
 ## Kubernetes Without kube-proxy
 https://docs.cilium.io/en/v1.10/gettingstarted/kubeproxy-free/
 
@@ -24,6 +33,7 @@ Cilium’s kube-proxy replacement depends on the Host-Reachable Services feature
 ```bash
 kubectl delete ds kube-proxy -n kube-system
 ```
+## Maglev
 
 ## Local Redirect Policy (beta)
 https://docs.cilium.io/en/v1.10/gettingstarted/local-redirect-policy/
@@ -36,7 +46,7 @@ DNS node-cache listens on a static IP to intercept traffic from application pods
 ## values.yaml
 full: https://github.com/cilium/cilium/blob/v1.10.0/install/kubernetes/cilium/values.yaml
 
-minimal: https://github.com/stasian/cilium-workshop/values.yml
+minimal: https://github.com/STASiAN/cilium-workshop/blob/main/values.yaml
 
 
 ## NetworkPolicy Editor: Create, Visualize, and Share Kubernetes NetworkPolicies
